@@ -1,2 +1,6 @@
 node_modules
 .env
+dev.env
+PRODUCTION.env
+Staging.env
+Q.txt
