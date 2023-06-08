@@ -1,0 +1,53 @@
+{
+  "commentTranslate.targetLanguage": "ar",
+  "separators.enabledSymbols": [
+    "Classes",
+    "Constructors",
+    "Enums",
+    "Functions",
+    "Interfaces",
+    "Methods",
+    "Namespaces",
+    "Structs"
+  ],
+  "files.exclude": {
+    "**/.git": true,
+    "**/.svn": true,
+    "**/.hg": true,
+    "**/CVS": true,
+    "**/.DS_Store": true,
+    "**/Thumbs.db": true,
+    "README.md": true,
+    "node_modules": true,
+    "package-lock.json": true,
+    ".gitignore": true
+  },
+  "hide-files.files": [
+    "node_modules",
+    ".gitignore"
+  ],
+  "docwriter.style": "Auto-detect",
+  "docwriter.progress.trackClasses": true,
+  "commentTranslate.hover.enabled": true,
+  "editor.tokenColorCustomizations": {
+    "textMateRules": [
+      {
+        "scope": "comment",
+        "settings": {
+          "fontStyle": "italic"
+        }
+      }
+    ],
+    "comments": ""
+  },
+  "workbench.iconTheme": "material-icon-theme",
+  "workbench.preferredHighContrastColorTheme": "Dobri Next -C06- Ayu",
+  "workbench.colorTheme": "Default Dark Modern",
+  "workbench.preferredDarkColorTheme": "Visual Studio Dark",
+  "editor.formatOnSave": true,
+  "workbench.colorCustomizations": {
+    "statusBar.noFolderBackground": "#262527",
+    "statusBar.debuggingBackground": "#292629",
+    "statusBar.debuggingForeground": "#ffffff"
+  }
+},

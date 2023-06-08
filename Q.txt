@@ -1,0 +1,118 @@
+@ASKS:
+
+# Q1?
+# Why not use async and await here? A: in the update of the package they use async and await alternate then 
+
+# .custom((categoryId) => {
+#   const category = CategoriesModel.findById(categoryId);
+#   if (!category)
+#     return Promise.reject(
+#       new Error(`No Category with this id: ${categoryId}`)
+#     );
+# }),
+
+# Q2?
+# Why is a category created by this code not similar to the product? A: we update it with API features after some videos
+
+# const postSubCategory = asyncHandler(async (req, res) => {
+#   const { name, category } = req.body;
+#   const subCategory = await SubCategoriesModel.create({
+#     name,
+#     slug: slugify(name),
+#     category,
+#   });
+#   res.status(201).json({ data: subCategory });
+# });
+
+# Q3?
+# Is the best practice that creates this code in the validator layer or not? yes he makes it after some videos
+# From:
+#   const { id } = req.params;
+#   if (req.body.title) {
+#     req.body.slug = slugify(req.body.title);
+#   }
+# To:
+#   .custom((name, { req }) => {
+#     req.body.slug = slugify(name);
+#     return true;
+#   }
+
+Q4?
+why do we use handlersFactory.js to contain separated functions, not a class containing all these functions ex ApiFeatures?
+
+Q5?
+should write validate for an image in the validation layer or No?
+
+check("image").isString().optional(),
+
+Q6?
+when case error, the image is saved on the file system however it does not save on db
+because "---ProcessingMiddleware" put before "---Valitatior" & controllers ex: "post--"
+what is solving this problem?
+
+Q7?
+when I should update "name", should update for slug automatically? I think yes
+
+Q8?
+why custom validation for check email is founded in Database (unique email)?
+I think to return this message"This Email already registered"
+# but we did not add custom validation for name and title in other Models?
+
+Q9?
+I see people use "const salt = await bcrypt.genSalt(12);" before "const passHashed = await bcrypt.hash(req.body.password, salt);"
+which is better?
+
+Q10?
+why in updateOneUser.js in userFactory?
+-Don't use:
+
+    const bodyClone = { ...req.body };
+    delete bodyClone.password;
+
+-alternate to:
+  { name : "Ahmed",
+    email: "afd@gmail.con",
+    phone: "01025896314",
+    role : "user", ...}
+
+Q11?
+
+# why don't we use "updatedAt" to alternate create a new field and use "passwordChangedAt"?
+#     "updatedAt": "2023-06-05T01:30:50.720Z",
+#     "__v": 0,
+#     "passwordChangedAt": "2023-06-05T01:30:50.718Z"
+
+# because we need when password change update only when any fields update
+
+Q12) why we do not generate new a token when updating the user password by Admin or make a free choice to admin to update or not?
+Q13) Why don't I delete these fields before returning it to a user
+    "password": "$2b$12$xmL73UiFWT5pxq95q0zrvOnAekCDbfiD1H1fWF1ZEe0E.WveTFBM2",
+    "active": true,
+    "createdAt": "2023-06-06T06:35:12.250Z",
+    "updatedAt": "2023-06-08T01:37:08.043Z",
+    "__v": 0,
+    "passwordChangedAt": "2023-06-08T01:37:08.041Z"
+
+Q14) Why when making validation on the route: "mechangepassword" make the error msg: "jwt malformed" name: "JsonWebTokenError" but when add token in header in postman, it work correctly
+_____________________________________________________________________________________________________________________________________________________________________________________________
+@Notes:
+  ** "cross-env" ==> for making "start: prod": "cross-env NODE_ENV=production node app.js" work on window
+  # ** UpdateRuleValidator does not create in this course (ok)
+  ** Update check name found before "slug" in other Controller
+  ** Search for know, how flat many objects are on one array
+  # ** he doesn't add "filterObject" to find after replacing code with "apiFeatures"
+  ** In most update routes in current applications in jobs make a route for updating all fields except password and make another route for updating password only.
+  ** solve add a Gmail to node mailer
+  ** `User changed password, please login again`  in protect in auth_C.js suggest change to "Password is changed, please login again" because may the admin who change the password
+__________________________________________________________________________________________________________________________________________________________________________________________________
+@Do not forget:
+# 1- Update slug and slugify and validator layer in category Controller after the image section because can update more than one field. (ok)
+2- Don't forget to write the check if the required "categoriesids" repeated on create validation and update validation or no line 84
+3- when I should update "name", should update for slug automatically
+4- create a route for deleting the token in the client when the token is in the cookies
+5- add a validation layer for forgetting passwords to check email is correct and not empty (ok)
+6- add a validation layer for updating new passwords after reset (ok)
+7-// hint from me: I should if passwordResetCodeExpiration end add in auth_C.js in verifyResetCode function
+  // user.passwordResetCode = undefined;
+  // user.passwordResetCodeExpiration = undefined;
+  // user.passwordResetCodeIsVerified = undefined;
