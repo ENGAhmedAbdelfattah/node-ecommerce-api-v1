@@ -75,6 +75,7 @@ const creatRules = [
     .notEmpty()
     .withMessage("Product must be belong to category")
     .custom(async (categeryId) => {
+      // 1) check category is exist
       const categery = await CategoriesModel.findById(categeryId);
       if (!categery) {
         throw new Error(`No Categery with this id: ${categeryId}`);
@@ -83,8 +84,16 @@ const creatRules = [
   check("subcategories")
     .isArray()
     .withMessage("Product's subcategories must be array")
-    .optional() //don't forget write check if required categoriesids repeated or no line 84
+    .optional()
     .custom(async (subcategoryIds) => {
+      // 2) check Subcategory Ids in the array must not be duplicated
+      const subcategoryIdsUnique = [...new Set(subcategoryIds)];
+      if (subcategoryIdsUnique.length !== subcategoryIds.length) {
+        throw new Error(`Subcategory Ids in the array must not be duplicated`);
+      }
+    })
+    .custom(async (subcategoryIds) => {
+      // 3) check all request subcategories is exist
       // categeryIdArray;
       const subCategories = await SubCategoriesModel.find({
         _id: { $exists: true, $in: subcategoryIds },
@@ -94,17 +103,20 @@ const creatRules = [
         subCategories.length < 1
       ) {
         throw new Error(`Invalid subcategories Ids`);
-      } //can use .count method
+      } //can use .countDocuments method
     })
     .custom(async (subcategoryIds, { req }) => {
+      // 4) get all id of subCategories which belong to request category
       const subcategoryDB = await SubCategoriesModel.find({
         category: req.body.category,
       });
       const subcategoryIdsInDB = subcategoryDB.map((subcategory) =>
         subcategory._id.toString()
       );
+      // 5) check subCategories (which belong to request category) include request all subCategories
       const checkerValidSubcategoryIds = (valList, arr) =>
         valList.every((v) => arr.includes(v));
+
       if (!checkerValidSubcategoryIds(subcategoryIds, subcategoryIdsInDB)) {
         throw new Error(`Subcategories must belong to main Category of it`);
       }
@@ -242,3 +254,12 @@ module.exports = {
   updateProductValitatior,
   deleteProductValitatior,
 };
+
+// other solution
+// const subcategoryIdsClone = [...subcategoryIds];
+// const IsNotUniqueIds = subcategoryIds.every((val) => {
+//   delete subcategoryIdsClone[subcategoryIds.indexOf(val)];
+//   return subcategoryIdsClone.includes(val);
+// });
+// if (IsNotUniqueIds)
+//   throw new Error(`Subcategory Ids in the array must not be duplicated`);

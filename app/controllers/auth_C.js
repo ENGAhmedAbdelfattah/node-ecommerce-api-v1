@@ -206,21 +206,27 @@ const verifyResetCode = asyncHandler(async (req, res, next) => {
     passwordResetCodeExpiration: { $gt: Date.now() },
   });
 
-  // hint from me: I should if passwordResetCodeExpiration end add
-  // user.passwordResetCode = undefined;
-  // user.passwordResetCodeExpiration = undefined;
-  // user.passwordResetCodeIsVerified = undefined;
+  if (!user) {
+    return next(
+      new ApiError(`Reset code  is invalid, expired or used before`, 400)
+    );
+  }
 
-  if (!user) return next(new ApiError(`Reset code is invalid or expired`, 400));
   // 2) Reset code valid
   user.passwordResetCodeIsVerified = true;
+  user.passwordResetCode = undefined;
+  user.passwordResetCodeExpiration = undefined;
   await user.save();
-  // setTimeout(() => {
-  //   user.passwordResetCodeIsVerified = false;
-  // }, 15000);
-  // await user.save();
 
-  res.status(200).json({ status: "Successs" });
+  setTimeout(() => {
+    user.passwordResetCodeIsVerified = undefined;
+    user.save();
+  }, 15 * 60 * 1000);
+
+  res.status(200).json({
+    status: "Successs",
+    message: "You can change your password within 15 minutes",
+  });
 });
 
 /**
@@ -238,10 +244,10 @@ const resetPassword = asyncHandler(async (req, res, next) => {
     );
   // 2) check if reset code verified and update password and undefined for code
   if (!user.passwordResetCodeIsVerified)
-    return next(new ApiError(`Reset code not verified`, 400));
+    return next(
+      new ApiError(`Reset code not verified, verified expired or used`, 400)
+    );
   user.password = newPassword;
-  user.passwordResetCode = undefined;
-  user.passwordResetCodeExpiration = undefined;
   user.passwordResetCodeIsVerified = undefined;
 
   await user.save();
@@ -279,3 +285,8 @@ module.exports = {
 // 1) create link with codeId and send this link to email
 // 2) encrypt for codeId it and save to db
 // 3) on route of reset code verify for id
+
+// hint from me: I should if passwordResetCodeExpiration end add
+// user.passwordResetCode = undefined;
+// user.passwordResetCodeExpiration = undefined;
+// user.passwordResetCodeIsVerified = undefined;

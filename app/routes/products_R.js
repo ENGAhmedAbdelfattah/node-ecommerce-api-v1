@@ -20,6 +20,7 @@ const {
 
 const gategoryImageProcessingMiddleware = require("../middleware/images_MW/productsImagesProcessing_MW");
 const { protect, allowTo } = require("../controllers/auth_C");
+const parseCategoriesMiddleware = require("../middleware/parseCategories_MW");
 
 const router = express.Router();
 
@@ -36,6 +37,7 @@ router
     allowTo("admin", "manager", "user"),
     uploadMultiImageMW,
     gategoryImageProcessingMiddleware,
+    parseCategoriesMiddleware,
     creatProductValitatior,
     postProduct
   );
@@ -50,12 +52,7 @@ router
     updateProductValitatior,
     updateProduct
   )
-  .delete(
-    protect,
-    allowTo("admin"),
-    deleteProductValitatior,
-    deleteProduct
-  );
+  .delete(protect, allowTo("admin"), deleteProductValitatior, deleteProduct);
 
 // NestRoute
 // /api/v1/categories/:id/subcategories
