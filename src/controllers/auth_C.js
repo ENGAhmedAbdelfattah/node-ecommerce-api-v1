@@ -37,10 +37,6 @@ const signup = asyncHandler(async (req, res, next) => {
   }
   // 3- generate JWT
   const token = createToken(user._id);
-  res.cookie("Authorization", `Bearer ${token}`, {
-    maxAge: parseInt(process.env.JWT_EXPIRATION_TIME_MS, 10),
-    httpOnly: true,
-  });
   // 4- send data
   res.status(201).json({ data: user, token });
 });
@@ -64,7 +60,6 @@ const login = asyncHandler(async (req, res, next) => {
 
   // 3- generate JWT
   const token = createToken(user._id);
-
   // 4- send data
   res.status(200).json({ data: user, token });
 });
@@ -290,3 +285,9 @@ module.exports = {
 // user.passwordResetCode = undefined;
 // user.passwordResetCodeExpiration = undefined;
 // user.passwordResetCodeIsVerified = undefined;
+
+// send cookies
+// res.cookie("Authorization", `Bearer ${token}`, {
+//   maxAge: parseInt(process.env.JWT_EXPIRATION_TIME_MS, 10),
+//   httpOnly: true,
+// });

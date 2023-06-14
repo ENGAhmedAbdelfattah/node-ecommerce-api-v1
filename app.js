@@ -1,13 +1,13 @@
 const app = require("./config/server");
-const categoriesRouter = require("./app/routes/categories_R");
-const subCategoriesRouter = require("./app/routes/subCategories_R");
-const subBrandsRouter = require("./app/routes/brands_R");
-const productsRouter = require("./app/routes/products_R");
-const usersRouter = require("./app/routes/users_R");
-const authRouter = require("./app/routes/auth_R");
+const categoriesRouter = require("./src/routes/categories_R");
+const subCategoriesRouter = require("./src/routes/subCategories_R");
+const subBrandsRouter = require("./src/routes/brands_R");
+const productsRouter = require("./src/routes/products_R");
+const usersRouter = require("./src/routes/users_R");
+const authRouter = require("./src/routes/auth_R");
 
-const allRouter = require("./app/routes/all_R");
-const globalErrorMiddleware = require("./app/middleware/globalError_MW");
+const allRouter = require("./src/routes/all_R");
+const globalErrorMiddleware = require("./src/middleware/globalError_MW");
 
 app.use("/api/v1/categories", categoriesRouter);
 app.use("/api/v1/subcategories", subCategoriesRouter);

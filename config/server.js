@@ -20,8 +20,8 @@ connectDB(process.env.DB_URL);
 
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
-app.use("/assets", express.static(join(__dirname, "./../app/uploads")));
-app.set("views", join(__dirname, "../app/views/"));
+app.use("/assets", express.static(join(__dirname, "./../src/uploads")));
+app.set("views", join(__dirname, "../src/views/"));
 // app.set("view engine", "pug");
 app.use(helmet());
 app.use(cookieParser());

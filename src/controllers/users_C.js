@@ -84,6 +84,10 @@ const updateUserPass = asyncHandler(async (req, res, next) => {
   );
   if (!user)
     return next(new ApiError(`No user for this id: ${req.params.id}`, 404));
+  // 2) generate new token
+  // because time of change password > time of old token so create token to be logged to logout
+  // or then redirect on client side to loggin page to reloggen again ( generate new token )
+
   res.status(200).json({ data: user });
 });
 
