@@ -103,11 +103,8 @@ const updateUserPassword = [
       if (!user) {
         throw new Error("Id is incorrect");
       }
-      // console.log("reqPass", reqPass);
-      // console.log("user.password", user.password);
 
       const isSimilar = await bcrypt.compare(reqPass, user.password);
-      console.log(isSimilar);
       if (!isSimilar) {
         throw new Error("Current password is incorrect");
       }

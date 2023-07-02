@@ -54,7 +54,6 @@ const login = asyncHandler(async (req, res, next) => {
   // important: must not add role
   // important: add only field of regester not all fields
   const user = await UsersModel.findOne({ email });
-  console.log(await bcrypt.compare(password, user.password));
   if (!user || !(await bcrypt.compare(password, user.password)))
     return next(new ApiError(`Incorrect email or password`, 401));
 
@@ -168,7 +167,6 @@ const forgotPassword = asyncHandler(async (req, res, next) => {
     // template,
     // context,
   });
-  // console.log("send", isSend);
   if (!isSend) {
     // reset save
     user.passwordResetCode = undefined;

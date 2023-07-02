@@ -39,8 +39,6 @@ const creatRules = [
     .isMongoId()
     .withMessage("Invalid product id format")
     .custom(async (productId, { req }) => {
-      // console.log("req.user._id", req.user._id);
-      // console.log("req.user._id String", req.user._id.toString());
       const review = await ReviewsModel.findOne({
         // user: req.user._id,
         // user: { _id: req.user._id },
@@ -49,7 +47,6 @@ const creatRules = [
         product: productId,
       });
       // user: req.user became "user._id": req.user._id after populate // https://www.mongodb.com/docs/manual/tutorial/query-embedded-documents/  https://stackoverflow.com/questions/54752711/how-to-find-by-nested-property-in-mongoose
-      // console.log("review1", review);
       if (review) throw new Error("You already created a review before");
       return true;
     }),

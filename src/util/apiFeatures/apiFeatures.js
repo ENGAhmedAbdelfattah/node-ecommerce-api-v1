@@ -78,7 +78,6 @@ class ApiFeatures {
           [key]: { $regex: this.queryString.keyword, $options: "i" },
         });
       });
-      console.log(searchQuery);
       this.mongooseQuery = this.mongooseQuery.find(searchQuery);
     }
     return this;
