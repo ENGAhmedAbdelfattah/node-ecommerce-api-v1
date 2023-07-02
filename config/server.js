@@ -12,21 +12,12 @@ require("dotenv").config({
 });
 
 const connectDB = require("./dataBase");
-const { webhookCheckout } = require("../src/controllers/orders_C");
 
 const app = express();
 
 // Enable other all domains to access your application
 app.use(cors());
 app.options("*", cors());
-
-// Enable other one domain only to access your application
-// const corsOptions = {
-//   origin: "http://example.com",
-//   optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
-// };
-// app.use(cors(corsOptions));
-// app.options("*", cors(corsOptions));
 
 // compress all responses
 app.use(compression());
@@ -57,11 +48,20 @@ app.set("views", join(__dirname, "../src/views/"));
 // app.set("view engine", "pug");
 app.use(helmet());
 app.use(cookieParser());
+
+module.exports = app;
+
+// Enable other one domain only to access your application
+// const corsOptions = {
+//   origin: "http://example.com",
+//   optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
+// };
+// app.use(cors(corsOptions));
+// app.options("*", cors(corsOptions));
+
 // // creat webhook-checkout
 // app.post(
 //   "/webhook-checkout",
 //   express.raw({ type: "application/json" }),
 //   webhookCheckout
 // );
-
-module.exports = app;
