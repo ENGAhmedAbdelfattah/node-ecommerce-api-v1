@@ -32,7 +32,7 @@ const afterCreatingOrder = async (res, cart, order) => {
   }));
   await ProductsModel.bulkWrite(bulkOptions, {});
   // 5) clear card depend on cartId
-  await CartsModel.findByIdAndDelete(cart._Id);
+  await CartsModel.findByIdAndDelete(cart._id);
   res.status(201).json({ status: "success", data: order });
 };
 /**
