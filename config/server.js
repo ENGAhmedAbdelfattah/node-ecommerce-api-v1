@@ -44,11 +44,11 @@ app.set("views", join(__dirname, "../src/views/"));
 // app.set("view engine", "pug");
 app.use(helmet());
 app.use(cookieParser());
-// creat webhook-checkout
-app.post(
-  "/webhook-checkout",
-  express.raw({ type: "application/json" }),
-  webhookCheckout
-);
+// // creat webhook-checkout
+// app.post(
+//   "/webhook-checkout",
+//   express.raw({ type: "application/json" }),
+//   webhookCheckout
+// );
 
 module.exports = app;
