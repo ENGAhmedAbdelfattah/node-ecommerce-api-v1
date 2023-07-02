@@ -9,14 +9,21 @@ const {
   getAllOrders,
   updateOrderToPaid,
   updateOrderToDelivered,
+  creatCheckoutSession,
+  webhookCheckout,
 } = require("../controllers/orders_C");
 const setLoggedUserFilterObjectMiddleware = require("../middleware/setLoggedUserFilterObject_MW");
 
 const router = express.Router();
 
 router.use(protect);
-router.route("/:cartId").post(allowTo("user"), creatCashOrder);
-allowTo("user", "admin", "manager");
+router.post("/:cartId", allowTo("user"), creatCashOrder);
+router.post("/checkout-session/:cartId", allowTo("user"), creatCheckoutSession);
+router.post(
+  "/webhook-checkout/",
+  express.raw({ type: "application/json" }),
+  webhookCheckout
+);
 
 router.get(
   "/",
