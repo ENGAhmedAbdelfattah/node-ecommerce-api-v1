@@ -174,11 +174,12 @@ const createCardOrder = async (session, req, res, next) => {
 
 /**
  * @desc    This webhook will run when stripe payment success paid
- * @route   POST /api/v1/orders/webhook-checkout
+ * @route   POST /webhook-checkout
  * @access  Private/User
  */
 const webhookCheckout = asyncHandler(async (req, res, next) => {
   const sig = req.headers["stripe-signature"];
+  console.log("enter webhookCheckout function");
   let event;
   try {
     event = stripe.webhooks.constructEvent(
@@ -190,6 +191,7 @@ const webhookCheckout = asyncHandler(async (req, res, next) => {
     res.status(400).send(`Webhook Error: ${err.message}`);
     return;
   }
+  console.log("event.type:", event.type);
   if (event.type === "checkout.session.completed") {
     // create order
     createCardOrder(event.data.object, res, next);
