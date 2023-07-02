@@ -40,10 +40,7 @@ connectDB(process.env.DB_URL);
 app.use(express.urlencoded({ extended: false }));
 // Custom middleware to bypass JSON parsing for specific route
 const excludeJsonParsing = (req, res, next) => {
-  if (
-    req.path ===
-    `${req.protocol}://${req.get("host")}/api/v1/orders/webhook-checkout`
-  ) {
+  if (req.baseUrl === `/api/v1/orders/webhook-checkout`) {
     // Skip JSON parsing for '/custom-route'
     next();
   } else {

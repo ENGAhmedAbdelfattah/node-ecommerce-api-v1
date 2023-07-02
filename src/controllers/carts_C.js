@@ -33,6 +33,7 @@ const getLoggedUserCart = asyncHandler(async (req, res, next) => {
  * @access  Private/User
  */
 const addProductToCart = asyncHandler(async (req, res, next) => {
+  console.log(req.baseUrl);
   const { productId, quantity, color } = req.body;
   const newQuantity = quantity ? quantity : 1;
 
