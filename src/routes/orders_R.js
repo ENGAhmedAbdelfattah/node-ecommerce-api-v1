@@ -19,7 +19,7 @@ const router = express.Router();
 // creat webhook-checkout
 router.post(
   "/webhook-checkout",
-  // express.raw({ type: "application/json" }),
+  express.raw({ type: "application/json" }),
   webhookCheckout
 );
 
