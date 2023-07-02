@@ -20,7 +20,7 @@ router.use(protect);
 router.post("/:cartId", allowTo("user"), creatCashOrder);
 router.post("/checkout-session/:cartId", allowTo("user"), creatCheckoutSession);
 router.post(
-  "/webhook-checkout/",
+  "/webhook-checkout",
   express.raw({ type: "application/json" }),
   webhookCheckout
 );
