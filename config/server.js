@@ -5,6 +5,7 @@ const morgan = require("morgan");
 const helmet = require("helmet");
 const cors = require("cors");
 const compression = require("compression");
+const rateLimit = require("express-rate-limit");
 
 const cookieParser = require("cookie-parser");
 require("dotenv").config({
@@ -36,7 +37,7 @@ const excludeJsonParsing = (req, res, next) => {
     next();
   } else {
     // Apply JSON parsing for other routes
-    express.json()(req, res, next);
+    express.json({ limit: "20kb" })(req, res, next);
   }
 };
 
@@ -48,6 +49,16 @@ app.set("views", join(__dirname, "../src/views/"));
 // app.set("view engine", "pug");
 app.use(helmet());
 app.use(cookieParser());
+
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 100,
+  message:
+    "Too many accounts created from this IP, please try again after an hour",
+});
+
+// Apply the rate limiting middleware to all requests
+app.use("/api", limiter);
 
 module.exports = app;
 
