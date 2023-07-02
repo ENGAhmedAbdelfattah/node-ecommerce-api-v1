@@ -38,7 +38,7 @@ if (process.env.NODE_ENV === "development") {
 connectDB(process.env.DB_URL);
 
 app.use(express.urlencoded({ extended: false }));
-// app.use(express.json());
+app.use(express.json());
 app.use("/assets", express.static(join(__dirname, "./../src/uploads")));
 app.set("views", join(__dirname, "../src/views/"));
 // app.set("view engine", "pug");
