@@ -147,17 +147,17 @@ const creatCheckoutSession = asyncHandler(async (req, res, next) => {
   res.status(200).json({ status: "success", session });
 });
 
-const createCardOrder = async (session, req, res, next) => {
+const createCardOrder = async (session, res, next) => {
   const cardId = session.client_reference_id;
   const shippingAddress = session.metadata;
   const totalOrderPrice = session.amount_total / 100;
 
   const cart = await CartsModel.findById(cardId);
   const { cartItems, taxPrice, shippingPrice } = cart;
-  // const user = await UsersModel.findOne({ email: session.customer_email });
+  const user = await UsersModel.findOne({ email: session.customer_email });
 
   const order = await OrdersModel.create({
-    user: req.user._id,
+    user: user._id,
     cartItems,
     taxPrice,
     shippingPrice,
