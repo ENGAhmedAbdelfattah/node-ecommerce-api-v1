@@ -115,7 +115,6 @@ const updateOrderToDelivered = asyncHandler(async (req, res, next) => {
  * @route   POST /api/v1/orders/checkout-session/:cartId
  * @access  Private/User
  */
-
 const creatCheckoutSession = asyncHandler(async (req, res, next) => {
   const { cartId } = req.params;
   const { cart, totalOrderPrice } = await findCartAndPrice(cartId);

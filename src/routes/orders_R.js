@@ -4,6 +4,14 @@ const express = require("express");
 
 const { protect, allowTo } = require("../controllers/auth_C");
 const {
+  creatCashOrderValidatior,
+  getOrderValidatior,
+  updateOrderToPaidValidatior,
+  updateOrderToDeliveredValidatior,
+  creatCheckoutSessionValidatior,
+} = require("../util/validator/order_V");
+
+const {
   creatCashOrder,
   getOrder,
   getAllOrders,
@@ -24,8 +32,18 @@ router.post(
 );
 
 router.use(protect);
-router.post("/:cartId", allowTo("user"), creatCashOrder);
-router.post("/checkout-session/:cartId", allowTo("user"), creatCheckoutSession);
+router.post(
+  "/:cartId",
+  allowTo("user"),
+  creatCashOrderValidatior,
+  creatCashOrder
+);
+router.post(
+  "/checkout-session/:cartId",
+  allowTo("user"),
+  creatCheckoutSessionValidatior,
+  creatCheckoutSession
+);
 
 router.get(
   "/",
@@ -37,11 +55,22 @@ router.get(
 router.get(
   "/:id",
   allowTo("user", "admin", "manager"),
+  getOrderValidatior,
   setLoggedUserFilterObjectMiddleware,
   getOrder
 );
 
-router.put("/:id/pay", allowTo("admin", "manager"), updateOrderToPaid);
-router.put("/:id/deliver", allowTo("admin", "manager"), updateOrderToDelivered);
+router.put(
+  "/:id/pay",
+  allowTo("admin", "manager"),
+  updateOrderToPaidValidatior,
+  updateOrderToPaid
+);
+router.put(
+  "/:id/deliver",
+  allowTo("admin", "manager"),
+  updateOrderToDeliveredValidatior,
+  updateOrderToDelivered
+);
 
 module.exports = router;
