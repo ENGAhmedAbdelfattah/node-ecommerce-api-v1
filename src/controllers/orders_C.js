@@ -5,6 +5,7 @@ const ApiError = require("../util/errors/errorClass");
 const OrdersModel = require("../models/orders_M");
 const ProductsModel = require("../models/products_M");
 const { getAll, getOne } = require("./handlersFactory/CURDFactory");
+const UsersModel = require("../models/users_M");
 
 const findCartAndPrice = async (cartId) => {
   const appSettings = { taxPrice: 0, shippingPrice: 0 }; // create app setting in model and get it by mongoose here
@@ -21,6 +22,19 @@ const findCartAndPrice = async (cartId) => {
   return { cart, cartItems, totalOrderPrice, taxPrice, shippingPrice };
 };
 
+const afterCreatingOrder = async (res, cart, order) => {
+  // 4) After creating order, decrement product quantity and increment product sold
+  const bulkOptions = cart.cartItems.map((item) => ({
+    updateOne: {
+      filter: { _id: item.product },
+      update: { $inc: { quantity: -item.quantity, sold: +item.quantity } },
+    },
+  }));
+  await ProductsModel.bulkWrite(bulkOptions, {});
+  // 5) clear card depend on cartId
+  await CartsModel.findByIdAndDelete(cart._Id);
+  res.status(201).json({ status: "success", data: order });
+};
 /**
  * @desc    Creat cash order
  * @route   POST /api/v1/orders/
@@ -58,18 +72,8 @@ const creatCashOrder = asyncHandler(async (req, res, next) => {
     shippingAddress: req.body.shippingAddress, // the frontend developer make user choose adress from Address list in user collection then send it in body or the backend make in Address Model field is active apply on one Address only then here get active address from Address collection in user collection
     totalOrderPrice,
   });
-  // 4) After creating order, decrement product quantity and increment product sold
   if (!order) return next(new ApiError(`Failed to create this order`, 400));
-  const bulkOptions = cart.cartItems.map((item) => ({
-    updateOne: {
-      filter: { _id: item.product },
-      update: { $inc: { quantity: -item.quantity, sold: +item.quantity } },
-    },
-  }));
-  await ProductsModel.bulkWrite(bulkOptions, {});
-  // 5) clear card depend on cartId
-  await CartsModel.findByIdAndDelete(cartId);
-  res.status(201).json({ status: "success", data: order });
+  await afterCreatingOrder(res, cart, order);
 });
 
 /**
@@ -143,6 +147,31 @@ const creatCheckoutSession = asyncHandler(async (req, res, next) => {
   res.status(200).json({ status: "success", session });
 });
 
+const createCardOrder = async (session, req, res, next) => {
+  const cardId = session.client_reference_id;
+  const shippingAddress = session.metadata;
+  const totalOrderPrice = session.amount_total / 100;
+
+  const cart = await CartsModel.findById(cardId);
+  const { cartItems, taxPrice, shippingPrice } = cart;
+  // const user = await UsersModel.findOne({ email: session.customer_email });
+
+  const order = await OrdersModel.create({
+    user: req.user._id,
+    cartItems,
+    taxPrice,
+    shippingPrice,
+    shippingAddress, // the frontend developer make user choose adress from Address list in user collection then send it in body or the backend make in Address Model field is active apply on one Address only then here get active address from Address collection in user collection
+    totalOrderPrice,
+    PaymentMethodType: "card",
+    isPaid: true,
+    paidAt: Date.now(),
+  });
+
+  if (!order) return next(new ApiError(`Failed to create this order`, 400));
+  await afterCreatingOrder(res, cart, order);
+};
+
 const webhookCheckout = asyncHandler(async (req, res, next) => {
   const sig = req.headers["stripe-signature"];
   let event;
@@ -157,10 +186,12 @@ const webhookCheckout = asyncHandler(async (req, res, next) => {
     return;
   }
   if (event.type === "checkout.session.completed") {
-    console.log("create order here...");
+    // create order
+    createCardOrder(event.data.object, res, next);
   }
-  next();
+  res.status(200).json({ success: "success", received: true });
 });
+
 module.exports = {
   getAllOrders,
   getOrder,
@@ -206,3 +237,15 @@ module.exports = {
 //     quantity: 1,
 //   },
 // ],
+
+// // 4) After creating order, decrement product quantity and increment product sold
+// const bulkOptions = cart.cartItems.map((item) => ({
+//   updateOne: {
+//     filter: { _id: item.product },
+//     update: { $inc: { quantity: -item.quantity, sold: +item.quantity } },
+//   },
+// }));
+// await ProductsModel.bulkWrite(bulkOptions, {});
+// // 5) clear card depend on cartId
+// await CartsModel.findByIdAndDelete(cartId);
+// res.status(201).json({ status: "success", data: order });
