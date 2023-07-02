@@ -75,7 +75,7 @@ class ApiFeatures {
       searchQuery.$or = [];
       keys.forEach((key) => {
         searchQuery.$or.push({
-          [`${key}`]: { $regex: this.queryString.keyword, $options: "i" },
+          [key]: { $regex: this.queryString.keyword, $options: "i" },
         });
       });
       console.log(searchQuery);

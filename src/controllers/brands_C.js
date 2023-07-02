@@ -11,14 +11,14 @@ const {
 /**
  * @desc    Get list of brands
  * @route   GET /api/v1/brands
- * @access  Public/Admin-Manager-User
+ * @access  Public
  */
 const getBrands = getAll(BrandsModel, "name");
 
 /**
  * @desc    Get spicific brands
  * @route   GET /api/v1/brands/:id
- * @access  Public/Admin-Manager-User
+ * @access  Public
  */
 const getBrand = getOne(BrandsModel);
 

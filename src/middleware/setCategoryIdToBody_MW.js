@@ -5,3 +5,5 @@ const setCategoryIdToBodyMiddleware = (req, res, next) => {
 };
 
 module.exports = setCategoryIdToBodyMiddleware;
+
+// deleted

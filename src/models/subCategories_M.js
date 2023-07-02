@@ -15,7 +15,7 @@ const subCategoriesSchema = mongoose.Schema(
       lowercase: true,
     },
     category: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: mongoose.Schema.ObjectId,
       ref: "categories",
       required: [true, "SubCategory must be belong to main category"],
     },

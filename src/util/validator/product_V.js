@@ -80,6 +80,7 @@ const creatRules = [
       if (!categery) {
         throw new Error(`No Categery with this id: ${categeryId}`);
       }
+      return true;
     }),
   check("subcategories")
     .isArray()
@@ -91,6 +92,7 @@ const creatRules = [
       if (subcategoryIdsUnique.length !== subcategoryIds.length) {
         throw new Error(`Subcategory Ids in the array must not be duplicated`);
       }
+      return true;
     })
     .custom(async (subcategoryIds) => {
       // 3) check all request subcategories is exist
@@ -104,6 +106,7 @@ const creatRules = [
       ) {
         throw new Error(`Invalid subcategories Ids`);
       } //can use .countDocuments method
+      return true;
     })
     .custom(async (subcategoryIds, { req }) => {
       // 4) get all id of subCategories which belong to request category
@@ -120,6 +123,7 @@ const creatRules = [
       if (!checkerValidSubcategoryIds(subcategoryIds, subcategoryIdsInDB)) {
         throw new Error(`Subcategories must belong to main Category of it`);
       }
+      return true;
     }),
   check("brand").isMongoId().withMessage("Invalid Id format").optional(),
   check("ratingsAverage")
@@ -200,6 +204,7 @@ const updateRules = [
       if (!categery) {
         throw new Error(`No Categery with this id: ${categeryId}`);
       }
+      return true;
     }),
   check("subcategories")
     .isArray()
@@ -216,6 +221,7 @@ const updateRules = [
       ) {
         throw new Error(`Invalid subcategories Ids`);
       } //can use .countDocuments method
+      return true;
     })
     .custom(async (subcategoryIds, { req }) => {
       const productCategory = await ProductsModel.findById(req.params.id); // add in update only not create
@@ -230,6 +236,7 @@ const updateRules = [
       if (!checkerValidSubcategoryIds(subcategoryIds, subcategoryIdsInDB)) {
         throw new Error(`Subcategories must belong to main Category of it`);
       }
+      return true;
     }),
   check("brand").isMongoId().withMessage("Invalid Id format").optional(),
   check("ratingsAverage")

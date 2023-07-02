@@ -23,6 +23,8 @@ const brandsSchema = new mongoose.Schema(
 
 setImagesURL(brandsSchema, "brands", "image");
 
+const BrandsModel = mongoose.model("brands", brandsSchema);
+module.exports = BrandsModel;
 
   // const setImageURL = (doc) => {
   //   if (doc.image) {
@@ -36,5 +38,3 @@ setImagesURL(brandsSchema, "brands", "image");
   // brandsSchema.post("save", (doc) => {
   //   setImageURL(doc);
   // });
-const BrandsModel = mongoose.model("brands", brandsSchema);
-module.exports = BrandsModel;

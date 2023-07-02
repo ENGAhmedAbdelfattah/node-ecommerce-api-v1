@@ -1,15 +1,15 @@
 const createErrForDev = (err) => ({
   message: err.message,
   error: err,
-  statusCode: err.statusCode,
-  status: err.status,
-  isOperation: err.isOperation,
+  statusCode: err.getStatusCode,
+  status: err.getStatus,
+  isOperation: err.getIsOperation,
   stack: err.stack,
 });
 
 const createErrForProd = (err) => ({
   message: err.message,
-  statusCode: err.statusCode,
+  statusCode: err.getStatusCode,
 });
 
 const handleJwtInvalidSignature = () => ({
@@ -23,8 +23,8 @@ const handleJwtExpired = () => ({
 });
 // _____________________________________________________________________________________
 const globalErrorMiddleware = (err, req, res, next) => {
-  err.statusCode = err.statusCode || 500;
-  err.status = err.status || "error";
+  err.statusCode = err.getStatusCode || 500;
+  err.status = err.getStatus || "error";
 
   let errObj = null;
   if (err.name === "JsonWebTokenError") {
@@ -43,6 +43,3 @@ const globalErrorMiddleware = (err, req, res, next) => {
 };
 
 module.exports = globalErrorMiddleware;
-
-// const handleJWTInvalidSignature = () =>
-//   new ApiError(`Invalid token, please login again`, 401);

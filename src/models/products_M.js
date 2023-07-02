@@ -37,6 +37,7 @@ const productsSchema = mongoose.Schema(
       max: [200_000, "Product price is very high"],
     },
     priceAfterDicount: {
+      // add when create cart model
       type: Number,
       max: [200_000, "Product price is very high"],
     },
@@ -56,28 +57,45 @@ const productsSchema = mongoose.Schema(
       default: 0,
     },
     category: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: mongoose.Schema.ObjectId,
       ref: "categories",
       required: [true, "Products must be belong to main category"],
     },
     subcategories: [
       {
-        type: mongoose.Schema.Types.ObjectId,
+        type: mongoose.Schema.ObjectId,
         ref: "subCategories",
       },
     ],
     brand: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: mongoose.Schema.ObjectId,
       ref: "brands",
     },
   },
   {
     timestamps: true,
+    // to enble virtual populate
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true },
   }
 );
 
+productsSchema.virtual("reviews", {
+  ref: "reviews",
+  foreignField: "product",
+  localField: "_id",
+});
+
 // Mongoose Middleware
 populateMongoose(productsSchema, "category", "name -_id");
+
+setImagesURL(productsSchema, "products", "imageCover", "images");
+
+const ProductsModel = mongoose.model("products", productsSchema);
+
+module.exports = ProductsModel;
+
+// populateMongoose:
 // productsSchema.pre(/^find/, function (next) {
 //   this.populate({
 //     path: "category",
@@ -86,7 +104,7 @@ populateMongoose(productsSchema, "category", "name -_id");
 //   next();
 // });
 
-setImagesURL(productsSchema, "products", "imageCover", "images");
+// setImagesURL:
 
 // const setImageURL = (doc) => {
 //   if (doc.imageCover) {
@@ -110,6 +128,14 @@ setImagesURL(productsSchema, "products", "imageCover", "images");
 //   setImageURL(doc);
 // });
 
-const ProductsModel = mongoose.model("products", productsSchema);
-
-module.exports = ProductsModel;
+// another way => When you `populate()` the `author` virtual, Mongoose will find the first document in the User model whose `_id` matches this document's `authorId` property.
+// virtuals: {
+//   author: {
+//     options: {
+//       ref: 'User',
+//       localField: 'authorId',
+//       foreignField: '_id',
+//       justOne: true
+//     }
+//   }
+// }

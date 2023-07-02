@@ -16,7 +16,7 @@ const encryptCode = require("../util/encrypt/encryptCode");
 /**
  * @desc    Create user
  * @route   POST /api/v1/auth/signup
- * @access  Public/Admin-Manager-User
+ * @access  Public
  */
 const signup = asyncHandler(async (req, res, next) => {
   // * normal validation on validation layer
@@ -44,7 +44,7 @@ const signup = asyncHandler(async (req, res, next) => {
 /**
  * @desc    Create user
  * @route   POST /api/v1/auth/login
- * @access  Public/Admin-Manager-User
+ * @access  Public
  */
 const login = asyncHandler(async (req, res, next) => {
   // * normal validation on validation layer
@@ -106,7 +106,7 @@ const protect = asyncHandler(async (req, res, next) => {
     );
 
   if (Date.parse(currentUser.passwordChangedAt) / 1000 > decoded.iat) {
-    // 4) check if user change his password after token created
+    // 4) check if user change his password after token created (by forgot password or by admin update password)
     return next(new ApiError(`Password is changed, please login again`, 401));
   }
   // 5) add user to req no res.locals bcacuse I will use it in validation layer
@@ -132,7 +132,7 @@ const allowTo = (...rols) =>
 /**
  * @desc    forgot password
  * @route   POST /api/v1/auth/forgotpassword
- * @access  Public/Admin-Manager-User
+ * @access  Public
  */
 const forgotPassword = asyncHandler(async (req, res, next) => {
   // 1) Check email is exist ( get user by email)
@@ -189,7 +189,7 @@ const forgotPassword = asyncHandler(async (req, res, next) => {
 /**
  * @desc    verify reset code
  * @route   POST /api/v1/auth/verifyResetCode
- * @access  Public/Admin-Manager-User
+ * @access  Public
  */
 const verifyResetCode = asyncHandler(async (req, res, next) => {
   // 1) Get user based on reset code
@@ -227,7 +227,7 @@ const verifyResetCode = asyncHandler(async (req, res, next) => {
 /**
  * @desc    reset password
  * @route   POST /api/v1/auth/resetpassword
- * @access  Public/Admin-Manager-User
+ * @access  Public
  */
 const resetPassword = asyncHandler(async (req, res, next) => {
   // 1) get user based on email

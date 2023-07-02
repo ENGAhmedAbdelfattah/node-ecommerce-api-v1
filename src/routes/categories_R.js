@@ -51,8 +51,11 @@ router
     deleteCategory
   );
 
-// NestRoute
-// /api/v1/categories/:id/subcategories
+
+/**
+ * @desc    NestRoute: subcategories in categories
+ * @route   /api/v1/categories/:idcategory/subcategories
+ */
 router.use("/:idcategory/subcategories", subCategoriesRouter);
 
 module.exports = router;

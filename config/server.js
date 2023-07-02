@@ -3,6 +3,9 @@ const { join } = require("path");
 const express = require("express");
 const morgan = require("morgan");
 const helmet = require("helmet");
+const cors = require("cors");
+const compression = require("compression");
+
 const cookieParser = require("cookie-parser");
 require("dotenv").config({
   path: join(__dirname, "./../.env"),
@@ -11,6 +14,21 @@ require("dotenv").config({
 const connectDB = require("./dataBase");
 
 const app = express();
+
+// Enable other all domains to access your application
+app.use(cors());
+app.options("*", cors());
+
+// Enable other one domain only to access your application
+// const corsOptions = {
+//   origin: "http://example.com",
+//   optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
+// };
+// app.use(cors(corsOptions));
+// app.options("*", cors(corsOptions));
+
+// compress all responses
+app.use(compression());
 
 if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));
@@ -25,6 +43,5 @@ app.set("views", join(__dirname, "../src/views/"));
 // app.set("view engine", "pug");
 app.use(helmet());
 app.use(cookieParser());
-
 
 module.exports = app;

@@ -1,4 +1,6 @@
 const asyncHandler = require("express-async-handler");
+const bcrypt = require("bcrypt");
+
 const ApiFeatures = require("../../util/apiFeatures/apiFeatures");
 const ApiError = require("../../util/errors/errorClass");
 
@@ -9,8 +11,10 @@ const ApiError = require("../../util/errors/errorClass");
  */
 const getAll = (Model, ...searchKeys) =>
   asyncHandler(async (req, res) => {
-    const filter = res.locals.filterObject ? res.locals.filterObject : {}; // from setFilterObject_MW
-    const countDocuments = await Model.find().countDocuments();
+    const { filterObject } = res.locals; // from setFilterObject_MW
+    const filter = filterObject ? filterObject : {};
+    const countDocuments = await Model.find().countDocuments(); // from me: Is add filter here ?
+    // 1) build query
     const documentFeatures = new ApiFeatures(Model.find(filter), req.query)
       .paginate(countDocuments)
       .filter()
@@ -18,6 +22,7 @@ const getAll = (Model, ...searchKeys) =>
       .limitFields()
       .sort();
     const { mongooseQuery, pagination } = documentFeatures;
+    // 2) execute query
     const documents = await mongooseQuery;
 
     res
@@ -30,10 +35,16 @@ const getAll = (Model, ...searchKeys) =>
  * @route   GET /api/v1/{documents}/:id
  * @access  Public
  */
-const getOne = (Model) =>
+const getOne = (Model, populationOptions) =>
   asyncHandler(async (req, res, next) => {
     const { id } = req.params;
-    const document = await Model.findById(id);
+    const { filterObject } = res.locals;
+    const filter = filterObject ? { _id: id, ...filterObject } : { _id: id }; // from setFilterObject_MW
+    // 1)bulid query
+    let query = Model.findOne(filter);
+    if (populationOptions) query = query.populate(populationOptions);
+    // 2) execute query
+    const document = await query;
     if (!document)
       return next(new ApiError(`No document for this id: ${id}`, 404));
     res.status(200).json({ data: document });
@@ -55,35 +66,55 @@ const createOne = (Model) =>
  * @route   PUT /api/v1/{documents}/:id
  * @access  Private
  */
-const updateOne = (Model) =>
+const updateOne = (Model, deleteFields, options) =>
   asyncHandler(async (req, res, next) => {
-    const document = await Model.findByIdAndUpdate(req.params.id, req.body, {
+    let bodyClone = { ...req.body };
+    if (deleteFields) {
+      deleteFields.forEach((field) => {
+        delete bodyClone[`${field}`];
+      });
+    }
+    if (options?.passowrdOnly === true) {
+      bodyClone = {
+        password: await bcrypt.hash(req.body.password, 12),
+        passwordChangedAt: Date.now(),
+      };
+      // 2) generate new token
+      // because time of change password > time of old token so create token to be logined to logout in protect function in auth_C ✔️
+      // and then redirect on client side to logining page to reloginen again ( generate new token ) ✔️
+    }
+
+    const document = await Model.findByIdAndUpdate(req.params.id, bodyClone, {
       new: true,
     });
+
     if (!document)
       return next(
         new ApiError(`No document for this id: ${req.params.id}`, 404)
       );
-    res.status(200).json({ data: document });
+    // Trigger "save" event when update document (which emit on mongoose post("save", ) middleware)
+    await document.save();
+    res.status(200).json({ status: "success", data: document });
   });
 
 /**
- * @desc    Delete spicific dovument
- * @route   PUT /api/v1/{dovuments}/:id
+ * @desc    Delete spicific document
+ * @route   PUT /api/v1/{documents}/:id
  * @access  Private
  */
 const deleteOne = (Model) =>
   asyncHandler(async (req, res, next) => {
     const { id } = req.params;
-    const dovument = await Model.findByIdAndDelete(id);
-    if (!dovument)
+    const document = await Model.findByIdAndDelete(id);
+
+    if (!document)
       return next(new ApiError(`No document for this id: ${id}`, 404));
     res.status(204).json({ status: "success" });
   });
 
 /**
- * @desc    Delete spicific dovument
- * @route   PUT /api/v1/{dovuments}/:id
+ * @desc    Delete spicific document
+ * @route   PUT /api/v1/{documents}/:id
  * @access  Private
  */
 const deactivateOne = (Model) =>
@@ -114,3 +145,20 @@ module.exports = {
 // note: in most update route in current applications in jobs
 // make route for update all fileds expect password
 // and make another route for update password only.
+
+// const getOne = (Model, populationOptions) =>
+//   asyncHandler(async (req, res, next) => {
+//     const filter = res.locals.filterObject ? res.locals.filterObject : {}; // from setNestingFilterObject_MW
+//     const { id } = req.params;
+//     // 1)bulid query
+//     let query = Model.find({
+//       $and: [filter, { _id: id }], //Error, should check if filter exist and correct
+//     });
+//     // let query = Model.findById(id);
+//     if (populationOptions) query = query.populate(populationOptions);
+//     // 2) execute query
+//     const document = await query;
+//     if (!document)
+//       return next(new ApiError(`No document for this id: ${id}`, 404));
+//     res.status(200).json({ data: document });
+//   });

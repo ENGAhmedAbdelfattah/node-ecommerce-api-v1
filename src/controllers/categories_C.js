@@ -11,14 +11,14 @@ const {
 /**
  * @desc    Get list of categories
  * @route   GET /api/v1/categories
- * @access  Public/Admin-Manager-User
+ * @access  Public
  */
 const getCategories = getAll(CategoriesModel, "name");
 
 /**
  * @desc    Get spicific category
  * @route   GET /api/v1/categories/:id
- * @access  Public/Admin-Manager-User
+ * @access  Public
  */
 const getCategory = getOne(CategoriesModel);
 

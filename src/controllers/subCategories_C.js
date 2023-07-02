@@ -11,14 +11,14 @@ const {
 /**
  * @desc    Get list of subcategories
  * @route   GET /api/v1/subcategories
- * @access  Public/Admin-Manager-User
+ * @access  Public
  */
 const getSubCategories = getAll(SubCategoriesModel, "name");
 
 /**
  * @desc    Get spicific subcategory
  * @route   GET /api/v1/subcategories/:id
- * @access  Public/Admin-Manager-User
+ * @access  Public
  */
 const getSubCategory = getOne(SubCategoriesModel);
 

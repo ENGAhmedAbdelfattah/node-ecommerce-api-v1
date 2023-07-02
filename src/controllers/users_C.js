@@ -11,6 +11,7 @@ const {
   createOne,
   deleteOne,
   deactivateOne,
+  updateOne,
 } = require("./handlersFactory/CURDFactory");
 const createToken = require("../util/encrypt/createToken");
 
@@ -54,42 +55,14 @@ const deactivateUser = deactivateOne(UsersModel);
  * @route   PUT /api/v1/users/:id
  * @access  Private/Admin
  */
-const updateUser = asyncHandler(async (req, res, next) => {
-  const bodyClone = { ...req.body };
-  delete bodyClone.password;
-  console.log(bodyClone);
-  const user = await UsersModel.findByIdAndUpdate(req.params.id, bodyClone, {
-    new: true,
-  });
-  if (!user)
-    return next(new ApiError(`No user for this id: ${req.params.id}`, 404));
-  res.status(200).json({ data: user });
-});
+const updateUser = updateOne(UsersModel, ["password"]);
 
 /**
  * @desc    Update spicific user
  * @route   PUT /api/v1/users/:id
  * @access  Private/Admin
  */
-const updateUserPass = asyncHandler(async (req, res, next) => {
-  const user = await UsersModel.findByIdAndUpdate(
-    req.params.id,
-    {
-      password: await bcrypt.hash(req.body.password, 12),
-      passwordChangedAt: Date.now(),
-    }, // should ecrypt
-    {
-      new: true,
-    }
-  );
-  if (!user)
-    return next(new ApiError(`No user for this id: ${req.params.id}`, 404));
-  // 2) generate new token
-  // because time of change password > time of old token so create token to be logged to logout
-  // or then redirect on client side to loggin page to reloggen again ( generate new token )
-
-  res.status(200).json({ data: user });
-});
+const updateUserPass = updateOne(UsersModel, null, { passowrdOnly: true });
 
 // _______________________________________________________________________________________________
 /**
@@ -99,7 +72,7 @@ const updateUserPass = asyncHandler(async (req, res, next) => {
  */
 const getLoggedUserData = asyncHandler(async (req, res, next) => {
   req.params.id = req.user._id;
-  next();
+  next(); // add getUser method which use getOne(UsersModel) in the next middleware pipeline
 });
 
 /**
@@ -198,3 +171,34 @@ module.exports = {
 //  * @access  Private/Admin
 //  */
 // const updateUserPass = updateUserPassword(UsersModel); //
+
+// const updateUser = asyncHandler(async (req, res, next) => {
+//   const bodyClone = { ...req.body };
+//   delete bodyClone.password;
+//   const user = await UsersModel.findByIdAndUpdate(req.params.id, bodyClone, {
+//     new: true,
+//   });
+//   if (!user)
+//     return next(new ApiError(`No user for this id: ${req.params.id}`, 404));
+//   res.status(200).json({ data: user });
+// });
+
+// const updateUserPass = asyncHandler(async (req, res, next) => {
+//   const user = await UsersModel.findByIdAndUpdate(
+//     req.params.id,
+//     {
+//       password: await bcrypt.hash(req.body.password, 12),
+//       passwordChangedAt: Date.now(),
+//     }, // should ecrypt
+//     {
+//       new: true,
+//     }
+//   );
+//   if (!user)
+//     return next(new ApiError(`No user for this id: ${req.params.id}`, 404));
+//   // 2) generate new token
+//   // because time of change password > time of old token so create token to be logined to logout in protect function in auth_C ✔️
+//   // and then redirect on client side to logining page to reloginen again ( generate new token ) ✔️
+
+//   res.status(200).json({ data: user });
+// });

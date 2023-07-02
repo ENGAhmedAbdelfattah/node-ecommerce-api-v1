@@ -32,6 +32,7 @@ const creatRules = [
       if (!categery) {
         throw new Error(`No Categery with this id: ${categeryId}`);
       }
+      return true;
     }),
 ];
 
@@ -57,6 +58,7 @@ const updateRules = [
       if (!categery) {
         throw new Error(`No Categery with this id: ${categeryId}`);
       }
+      return true;
     }),
 ];
 

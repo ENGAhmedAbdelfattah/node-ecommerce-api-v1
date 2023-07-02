@@ -2,9 +2,7 @@ const setImagesURL = (schema, folderName, ...imagefields) => {
   const creatImageURL = (doc) => {
     for (const image of imagefields) {
       if (typeof image === "string" && doc[image]) {
-        doc[
-          image
-        ] = `${process.env.BASE_URL}/assets/${folderName}/${doc[image]}`;
+        doc[image] = `${process.env.BASE_URL}/assets/${folderName}/${doc[image]}`;
       } else if (Array.isArray(image) === true && doc[image]) {
         const listImages = [];
         doc[imagefields].forEach((img) => {
@@ -16,7 +14,7 @@ const setImagesURL = (schema, folderName, ...imagefields) => {
     }
   };
 
-  
+
   schema.post("init", (doc) => {
     creatImageURL(doc);
   });

@@ -11,16 +11,16 @@ const {
 /**
  * @desc    Get list of products
  * @route   GET /api/v1/products
- * @access  Public/Admin-Manager-User
+ * @access  Public
  */
 const getProducts = getAll(ProductsModel, "title", "description");
 
 /**
  * @desc    Get spicific product
  * @route   GET /api/v1/products/:id
- * @access  Public/Admin-Manager-User
+ * @access  Public
  */
-const getProduct = getOne(ProductsModel);
+const getProduct = getOne(ProductsModel, "reviews");
 
 /**
  * @desc    Create product

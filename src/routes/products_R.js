@@ -14,6 +14,7 @@ const {
   updateProduct,
   deleteProduct,
 } = require("../controllers/products_C");
+const reviewsRouter = require("./reviews_R");
 const {
   uploadImagesMiddleware,
 } = require("../middleware/images_MW/uploadImages_MW");
@@ -54,8 +55,10 @@ router
   )
   .delete(protect, allowTo("admin"), deleteProductValitatior, deleteProduct);
 
-// NestRoute
-// /api/v1/categories/:id/subcategories
-// router.use("/:idproduct/subcategories", subCategoriesRouter);
+/**
+ * @desc    NestRoute: reviews in products
+ * @route   /api/v1/products/:idproduct/reviews
+ */
+router.use("/:idproduct/reviews", reviewsRouter)
 
 module.exports = router;
