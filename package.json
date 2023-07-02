@@ -5,6 +5,7 @@
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node app",
     "start:dev": "nodemon app",
     "start:prod": "cross-env NODE_ENV=production node app.js"
   },
@@ -56,6 +57,7 @@
     "prettier": "^2.8.8"
   },
   "engines": {
-    "node": ">=10.6.0"
+    "node": "18.x",
+    "npm": "^9.5.0"
   }
 }
