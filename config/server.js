@@ -38,7 +38,23 @@ if (process.env.NODE_ENV === "development") {
 connectDB(process.env.DB_URL);
 
 app.use(express.urlencoded({ extended: false }));
-app.use(express.json());
+// Custom middleware to bypass JSON parsing for specific route
+const excludeJsonParsing = (req, res, next) => {
+  if (
+    req.path ===
+    `${req.protocol}://${req.get("host")}/api/v1/orders/webhook-checkout`
+  ) {
+    // Skip JSON parsing for '/custom-route'
+    next();
+  } else {
+    // Apply JSON parsing for other routes
+    express.json()(req, res, next);
+  }
+};
+
+// Apply the custom middleware to all routes
+app.use(excludeJsonParsing);
+
 app.use("/assets", express.static(join(__dirname, "./../src/uploads")));
 app.set("views", join(__dirname, "../src/views/"));
 // app.set("view engine", "pug");
