@@ -6,6 +6,9 @@ const helmet = require("helmet");
 const cors = require("cors");
 const compression = require("compression");
 const rateLimit = require("express-rate-limit");
+const hpp = require("hpp");
+const mongoSanitize = require("express-mongo-sanitize");
+const { xss } = require("express-xss-sanitizer");
 
 const cookieParser = require("cookie-parser");
 require("dotenv").config({
@@ -29,6 +32,7 @@ if (process.env.NODE_ENV === "development") {
 }
 connectDB(process.env.DB_URL);
 
+// Parsing
 app.use(express.urlencoded({ extended: false }));
 // Custom middleware to bypass JSON parsing for specific route
 const excludeJsonParsing = (req, res, next) => {
@@ -40,15 +44,30 @@ const excludeJsonParsing = (req, res, next) => {
     express.json({ limit: "20kb" })(req, res, next);
   }
 };
-
 // Apply the custom middleware to all routes
 app.use(excludeJsonParsing);
+app.use(cookieParser());
+/* Start security*/
+app.use(helmet());
+app.use(
+  hpp({
+    whitelist: [
+      "price",
+      "sold",
+      "quantity",
+      "ratingsAverage",
+      "ratingsQuantity",
+    ],
+  })
+);
+app.use(mongoSanitize());
+app.use(xss());
+
+/* End security*/
 
 app.use("/assets", express.static(join(__dirname, "./../src/uploads")));
 app.set("views", join(__dirname, "../src/views/"));
 // app.set("view engine", "pug");
-app.use(helmet());
-app.use(cookieParser());
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
