@@ -23,7 +23,14 @@ const generateCSRFToken = asyncHandler(async (req, res, next) => {
   req.session.csrfSecret = csrfSecret; // store it in session for login user
   // csrfSecretOne = csrfSecret;
   // send secret to frontend
-  res.status(200).json({ status: "success", token });
+  // res.status(200).json({ status: "success", token })
+  res.cookie("X-CSRF-TOKEN", token, {
+    maxAge: parseInt(process.env.JWT_EXPIRATION_TIME_MS, 10),
+    httpOnly: false,
+    secure: process.env.NODE_ENV === "production" ? true : false,
+  });
+  res.status(200).json({ status: "success" });
+
   /* --in frontend --*/
   // const tokensF = new Tokens(); // this line in frontend (attacker should use same package and get secret to can hack you)
   // const token = tokensF.create(csrfSecret); // this line not work in frontend this line in frontend (attacker should use same package and get secret to can hack you)
