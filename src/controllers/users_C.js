@@ -1,7 +1,6 @@
 // (ADMIN) CURD operator
 const asyncHandler = require("express-async-handler");
 const bcrypt = require("bcrypt");
-const ApiError = require("../util/errors/errorClass");
 
 const UsersModel = require("../models/users_M");
 
@@ -14,6 +13,7 @@ const {
   updateOne,
 } = require("./handlersFactory/CURDFactory");
 const createToken = require("../util/encrypt/createToken");
+const { sanitizeLoggedUser } = require("../util/sanitizeData/sanitizeUser");
 
 /**
  * @desc    Get list of user
@@ -97,7 +97,7 @@ const updateLoggedUserPassword = asyncHandler(async (req, res, next) => {
   // because time of change password > time of old token so create token to be logged to logout
   // or then redirect on client side to loggin page to reloggen again ( generate new token )
 
-  res.status(200).json({ data: user, token });
+  res.status(200).json({ data: sanitizeLoggedUser(user), token });
   next();
 });
 
@@ -113,7 +113,7 @@ const updateLoggedUserData = asyncHandler(async (req, res, next) => {
     { name, email, phone, profileImage },
     { new: true }
   );
-  res.status(200).json({ data: user });
+  res.status(200).json({ data: sanitizeLoggedUser(user) });
   next();
 });
 
