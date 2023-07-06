@@ -44,13 +44,7 @@ router
     updateCategoryValitatior,
     updateCategory
   )
-  .delete(
-    protect,
-    allowTo("admin"),
-    deleteCategoryValitatior,
-    deleteCategory
-  );
-
+  .delete(protect, allowTo("admin"), deleteCategoryValitatior, deleteCategory);
 
 /**
  * @desc    NestRoute: subcategories in categories

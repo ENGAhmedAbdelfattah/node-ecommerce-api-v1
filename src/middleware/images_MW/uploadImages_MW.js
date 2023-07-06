@@ -8,7 +8,7 @@ const uploadImagesMiddleware = (method = "single", fields) => {
   // if (method === "fields") {
   //   fieldsArr = fields || [];
   // }
-  
+
   // 1 - DiskStorage engine
   // const multerStorage = multer.diskStorage({
   //   destination: function (req, file, cb) {
@@ -22,6 +22,7 @@ const uploadImagesMiddleware = (method = "single", fields) => {
   //   },
   // });
   // 2 - MulterFilter
+
   const multerFilter = function (req, file, cb) {
     if (file.mimetype.startsWith("image")) {
       return cb(null, true);
@@ -33,7 +34,7 @@ const uploadImagesMiddleware = (method = "single", fields) => {
   const multerStorage = multer.memoryStorage();
 
   // const upload = multer({ dest: "uploads/categories" });
-  const upload = multer({ storage: multerStorage, fileFilter: multerFilter });
+  const upload = multer({ storage: multerStorage, fileFilter: multerFilter }); // multer function make form-data image in req.files and other form-data fields in req.body, without it req.body is empty
 
   return upload[method](fields);
 };

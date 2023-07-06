@@ -1,4 +1,5 @@
 const express = require("express");
+
 const {
   addProductToCartValitatior,
   updateCartItemQuantityValitatior,
@@ -6,7 +7,7 @@ const {
   removeCartItemValitatior,
 } = require("../util/validator/cart_V");
 
-const { protect, allowTo } = require("../controllers/auth_C");
+const { protect, allowTo, csrfProtect, sessionProtect } = require("../controllers/auth_C");
 const {
   getLoggedUserCart,
   addProductToCart,
@@ -18,12 +19,16 @@ const {
 
 const router = express.Router();
 
-router.use(protect, allowTo("user"));
+router.use(sessionProtect, protect, allowTo("user"));
 
 router
   .route("/")
   .get(getLoggedUserCart)
-  .post(addProductToCartValitatior, addProductToCart)
+  .post(
+    csrfProtect, // after imageMw beacuse data send in from-data not in req.body and image MW make it in req.body
+    addProductToCartValitatior,
+    addProductToCart
+  )
   .delete(clearCart);
 
 router.put("/applycoupon", applyCouponValitatior, applyCoupon);

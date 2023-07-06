@@ -14,6 +14,7 @@ const {
   updateOne,
 } = require("./handlersFactory/CURDFactory");
 const createToken = require("../util/encrypt/createToken");
+const cookiesOptions = require("../util/cookies/cookiesOptions");
 
 /**
  * @desc    Get list of user
@@ -94,10 +95,14 @@ const updateLoggedUserPassword = asyncHandler(async (req, res, next) => {
   );
   // 2) generate new token
   const token = createToken(user._id);
+  res.cookie("authorization", `Bearer ${token}`, cookiesOptions);
+  req.session.isAuthenticated = true;
+  req.session.userEmail = user.email;
+
   // because time of change password > time of old token so create token to be logged to logout
   // or then redirect on client side to loggin page to reloggen again ( generate new token )
 
-  res.status(200).json({ data: user, token });
+  res.status(200).json({ data: user });
   next();
 });
 

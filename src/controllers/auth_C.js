@@ -2,15 +2,32 @@
 
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
-// const crypto = require("crypto");
-
+const Tokens = require("csrf");
 const asyncHandler = require("express-async-handler");
+
 const ApiError = require("../util/errors/errorClass");
 const UsersModel = require("../models/users_M");
 // const sendMailGun = require("../util/email/sendMailGun");
 const sendMailGmail = require("../util/email/sendMailGmail");
 const createToken = require("../util/encrypt/createToken");
 const encryptCode = require("../util/encrypt/encryptCode");
+const cookiesOptions = require("../util/cookies/cookiesOptions");
+
+// -------------------------
+// let csrfSecretOne = "";
+const generateCSRFToken = asyncHandler(async (req, res, next) => {
+  // Generate a CSRF token
+  const tokens = new Tokens();
+  const csrfSecret = await tokens.secret();
+  const token = tokens.create(csrfSecret); // send it to frontend
+  req.session.csrfSecret = csrfSecret; // store it in session for login user
+  // csrfSecretOne = csrfSecret;
+  // send secret to frontend
+  res.status(200).json({ status: "success", token });
+  /* --in frontend --*/
+  // const tokensF = new Tokens(); // this line in frontend (attacker should use same package and get secret to can hack you)
+  // const token = tokensF.create(csrfSecret); // this line not work in frontend this line in frontend (attacker should use same package and get secret to can hack you)
+});
 
 // ________________________________________________________________________________________________________________________
 /**
@@ -37,8 +54,12 @@ const signup = asyncHandler(async (req, res, next) => {
   }
   // 3- generate JWT
   const token = createToken(user._id);
+  res.cookie("authorization", `Bearer ${token}`, cookiesOptions);
+  req.session.isAuthenticated = true;
+  req.session.userEmail = user.email;
+
   // 4- send data
-  res.status(201).json({ data: user, token });
+  res.status(201).json({ data: user });
 });
 
 /**
@@ -59,11 +80,72 @@ const login = asyncHandler(async (req, res, next) => {
 
   // 3- generate JWT
   const token = createToken(user._id);
+  res.cookie("authorization", `Bearer ${token}`, cookiesOptions);
+  // from me: can use cookie for knowe user which active (by not determinte expire time (session only))
+  res.cookie("active", `active user: ${user.email}`, { httpOnly: true });
+
+  req.session.isAuthenticated = true;
+  req.session.userEmail = user.email;
+
   // 4- send data
-  res.status(200).json({ data: user, token });
+  res.status(200).json({ data: user });
+});
+
+const logout = asyncHandler(async (req, res, next) => {
+  req.session.destroy((err) => {
+    if (err) throw err;
+    res
+      .status(200)
+      .json({ status: "successs", message: "Logout successfully" });
+    // res.redirect("/");
+  });
 });
 
 // ________________________________________________________________________________________________________________________
+
+/**
+ * @desc verify login (verify authentication in session)
+ */
+const sessionProtect = asyncHandler(async (req, res, next) => {
+  console.log();
+  if (!req.session.isAuthenticated)
+    return next(
+      new ApiError(
+        `You are not authenticated, please login to access this route`,
+        401
+      )
+    );
+  next();
+});
+/**
+ * @desc verify login (verify csrf in session)
+ */
+const csrfProtect = asyncHandler(async (req, res, next) => {
+  // Retrieve server secret asynchronously csrfProtect function
+  const { token } = req.body;
+  console.log("req.body:", req.body);
+  console.log(req.session.csrfSecret);
+  if (!req.session.csrfSecret) {
+    return next(new ApiError("Failed to retrieve server secret", 401));
+  }
+  // if (!csrfSecretOne) {
+  //   return next(new ApiError("no csrfSecretOne", 401));
+  // }
+
+  if (!token) {
+    return next(new ApiError("Failed to retrieve server secret22", 401));
+  }
+  const tokens = new Tokens();
+  if (!tokens.verify(req.session.csrfSecret, token)) {
+    return next(new ApiError("Invalid token!", 401));
+  }
+  // if (!tokens.verify(csrfSecretOne, token)) {
+  //   return next(new ApiError("Invalid token!", 401));
+  // }
+  console.log("Token is valid ok ok ok 3");
+  next();
+});
+
 /**
  * @desc verify login (verify authentication)
  */
@@ -71,10 +153,10 @@ const protect = asyncHandler(async (req, res, next) => {
   // 1) check if token exist, if exist hold it
   let token = "";
   if (
-    req.headers.authorization &&
-    req.headers.authorization.startsWith("Bearer")
+    req.cookies.authorization &&
+    req.cookies.authorization.startsWith("Bearer")
   ) {
-    token = req.headers.authorization.split(" ")[1];
+    token = req.cookies.authorization.split(" ")[1];
   }
   if (!token) {
     return next(
@@ -246,19 +328,28 @@ const resetPassword = asyncHandler(async (req, res, next) => {
   await user.save();
   // important: encrypt path in mongoose middleware
 
-  // 3) generate new token
+  // 3) generate new token (or clear passed token(make it invalid) and reqest to login again)
   const token = createToken(user._id);
-  res.status(200).json({ token });
+  res.cookie("authorization", `Bearer ${token}`, cookiesOptions);
+  req.session.isAuthenticated = true;
+  req.session.userEmail = user.email;
+
+  res.status(200).json({ status: "success" });
 });
+
 // _______________________________________________________________________________________________________________________
 module.exports = {
   signup,
   login,
+  logout,
+  sessionProtect,
   protect,
   allowTo,
   forgotPassword,
   verifyResetCode,
   resetPassword,
+  generateCSRFToken,
+  csrfProtect,
 };
 
 // console.log(resetCode); // send to user in email
@@ -285,7 +376,8 @@ module.exports = {
 // user.passwordResetCodeIsVerified = undefined;
 
 // send cookies
-// res.cookie("Authorization", `Bearer ${token}`, {
+// res.cookie("authorization", `Bearer ${token}`, {
 //   maxAge: parseInt(process.env.JWT_EXPIRATION_TIME_MS, 10),
 //   httpOnly: true,
+//   secure: true, //in production
 // });
