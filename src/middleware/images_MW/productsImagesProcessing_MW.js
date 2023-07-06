@@ -3,7 +3,7 @@ const sharp = require("sharp");
 const asyncHandler = require("express-async-handler");
 const { v4: uuidv4 } = require("uuid");
 
-const gategoryImageProcessingMiddleware = asyncHandler(
+const productsImageProcessingMiddleware = asyncHandler(
   async (req, res, next) => {
     // 1- imageCover
     if (req.files) {
@@ -49,4 +49,4 @@ const gategoryImageProcessingMiddleware = asyncHandler(
   }
 );
 
-module.exports = gategoryImageProcessingMiddleware;
+module.exports = productsImageProcessingMiddleware;
