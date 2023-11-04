@@ -89,7 +89,7 @@ module.exports = app;
 // app.use(cors(corsOptions));
 // app.options("*", cors(corsOptions));
 
-// // creat webhook-checkout
+// // create webhook-checkout
 // app.post(
 //   "/webhook-checkout",
 //   express.raw({ type: "application/json" }),
