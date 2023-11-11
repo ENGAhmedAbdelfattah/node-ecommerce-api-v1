@@ -97,7 +97,8 @@ const updateLoggedUserPassword = asyncHandler(async (req, res, next) => {
   // because time of change password > time of old token so create token to be logged to logout
   // or then redirect on client side to loggin page to reloggen again ( generate new token )
 
-  res.status(200).json({ data: sanitizeLoggedUser(user), token });
+  // res.status(200).json({ data: sanitizeLoggedUser(user), token });
+  res.status(200).json({ data: user, token });
   next();
 });
 
@@ -113,7 +114,9 @@ const updateLoggedUserData = asyncHandler(async (req, res, next) => {
     { name, email, phone, profileImage },
     { new: true }
   );
-  res.status(200).json({ data: sanitizeLoggedUser(user) });
+  // res.status(200).json({ data: sanitizeLoggedUser(user) });
+  res.status(200).json({ data: user });
+
   next();
 });
 

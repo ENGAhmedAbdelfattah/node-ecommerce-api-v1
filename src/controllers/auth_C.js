@@ -39,7 +39,9 @@ const signup = asyncHandler(async (req, res, next) => {
   // 3- generate JWT
   const token = createToken(user._id);
   // 4- send data
-  res.status(201).json({ data: sanitizeUser(user), token });
+  // res.status(201).json({ data: sanitizeUser(user), token });
+  res.status(201).json({ data: user, token });
+
 });
 
 /**
@@ -61,7 +63,9 @@ const login = asyncHandler(async (req, res, next) => {
   // 3- generate JWT
   const token = createToken(user._id);
   // 4- send data
-  res.status(200).json({ data: sanitizeUser(user), token });
+  // res.status(200).json({ data: sanitizeUser(user), token });
+  res.status(200).json({ data: user, token });
+
 });
 
 // ________________________________________________________________________________________________________________________
