@@ -9,8 +9,7 @@ const authRouter = require("./auth_R");
 const reviewsRouter = require("./reviews_R");
 const wishlistRouter = require("./wishlist_R");
 const addressesRouter = require("./addresses_R");
-const couponsRouter = requ
-ire("./coupons_R");
+const couponsRouter = require("./coupons_R");
 const cartsRouter = require("./carts_R");
 const ordersRouter = require("./orders_R");
 
