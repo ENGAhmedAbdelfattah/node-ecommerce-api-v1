@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const setImagesURL = require("./mongoose_MW/setImageURL");
+// const setImagesURL = require("./mongoose_MW/setImageURL");
 const populateMongoose = require("./mongoose_MW/populate");
 
 const productsSchema = mongoose.Schema(
@@ -89,7 +89,7 @@ productsSchema.virtual("reviews", {
 // Mongoose Middleware
 populateMongoose(productsSchema, "category", "name -_id");
 
-setImagesURL(productsSchema, "products", "imageCover", "images");
+// setImagesURL(productsSchema, "products", "imageCover", "images");
 
 const ProductsModel = mongoose.model("products", productsSchema);
 

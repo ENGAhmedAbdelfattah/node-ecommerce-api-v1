@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const setImagesURL = require("./mongoose_MW/setImageURL");
+// const setImagesURL = require("./mongoose_MW/setImageURL");
 
 const brandsSchema = new mongoose.Schema(
   {
@@ -21,7 +21,7 @@ const brandsSchema = new mongoose.Schema(
   }
 );
 
-setImagesURL(brandsSchema, "brands", "image");
+// setImagesURL(brandsSchema, "brands", "image");
 
 const BrandsModel = mongoose.model("brands", brandsSchema);
 module.exports = BrandsModel;

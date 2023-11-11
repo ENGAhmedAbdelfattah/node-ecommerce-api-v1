@@ -17,6 +17,7 @@ const {
   uploadImagesMiddleware,
 } = require("../middleware/images_MW/uploadImages_MW");
 const { protect, allowTo } = require("../controllers/auth_C");
+// const uploadToCloudinary = require("../middleware/cloudinary/cloudinary_MW");
 
 const router = express.Router();
 
@@ -29,6 +30,7 @@ router
     protect,
     allowTo("admin", "manager"),
     uploadSingleImageMW,
+    // uploadToCloudinary,
     brandImageProcessingMiddleware,
     creatBrandValitatior,
     postBrand
@@ -44,11 +46,6 @@ router
     updateBrandValitatior,
     updateBrand
   )
-  .delete(
-    protect,
-    allowTo("admin"),
-    deleteBrandValitatior,
-    deleteBrand
-  );
+  .delete(protect, allowTo("admin"), deleteBrandValitatior, deleteBrand);
 
 module.exports = router;

@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 const valid = require("validator");
-const setImagesURL = require("./mongoose_MW/setImageURL");
+// const setImagesURL = require("./mongoose_MW/setImageURL");
 const encryptPass = require("./mongoose_MW/encryptPass");
 
 // embedded schema in user schema
@@ -79,7 +79,7 @@ const usersSchema = mongoose.Schema(
   }
 );
 
-setImagesURL(usersSchema, "users", "profileImage");
+// setImagesURL(usersSchema, "users", "profileImage");
 encryptPass(usersSchema);
 
 const UsersModel = mongoose.model("users", usersSchema);

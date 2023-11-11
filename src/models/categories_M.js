@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const setImagesURL = require("./mongoose_MW/setImageURL");
+// const setImagesURL = require("./mongoose_MW/setImageURL");
 
 const categoriesSchema = new mongoose.Schema(
   {
@@ -22,7 +22,7 @@ const categoriesSchema = new mongoose.Schema(
   }
 );
 
-setImagesURL(categoriesSchema, "categories", "image");
+// setImagesURL(categoriesSchema, "categories", "image");
 
 // const setImageURL = (doc) => {
 //   if (doc.image) {
