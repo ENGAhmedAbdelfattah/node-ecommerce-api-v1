@@ -69,15 +69,15 @@ app.use("/assets", express.static(join(__dirname, "./../src/uploads")));
 app.set("views", join(__dirname, "../src/views/"));
 // app.set("view engine", "pug");
 
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 100,
-  message:
-    "Too many accounts created from this IP, please try again after an hour",
-});
+// const limiter = rateLimit({
+//   windowMs: 15 * 60 * 1000,
+//   max: 100,
+//   message:
+//     "Too many accounts created from this IP, please try again after an hour",
+// });
 
 // Apply the rate limiting middleware to all requests
-app.use("/api", limiter);
+// app.use("/api", limiter);
 
 module.exports = app;
 
