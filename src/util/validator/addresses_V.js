@@ -30,9 +30,13 @@ const creatRules = [
     .withMessage("address details required"),
   check("phone").isMobilePhone().withMessage("Invalid mobile number"),
   check("city")
-    .isAlpha()
+    .optional()
+    .isString()
     .withMessage("City name must contain only alphabetic characters"),
-  check("postalCode").isPostalCode("any").withMessage("Invalid postal code"),
+  check("postalCode")
+    .optional()
+    .isPostalCode("any")
+    .withMessage("Invalid postal code"),
 ];
 
 const updateRules = [
@@ -60,9 +64,13 @@ const updateRules = [
     .optional(),
   check("phone").isMobilePhone().withMessage("Invalid mobile number"),
   check("city")
-    .isAlpha()
+    .optional()
+    .isString()
     .withMessage("City name must contain only alphabetic characters"),
-  check("postalCode").isPostalCode("any").withMessage("Invalid postal code"),
+  check("postalCode")
+    .optional()
+    .isPostalCode("any")
+    .withMessage("Invalid postal code"),
 ];
 
 const addToAddressesValitatior = [creatRules, valitatiorMiddleware];
