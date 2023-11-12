@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 // const setImagesURL = require("./mongoose_MW/setImageURL");
-const populateMongoose = require("./mongoose_MW/populate");
+// const populateMongoose = require("./mongoose_MW/populate");
 
 const productsSchema = mongoose.Schema(
   {
@@ -87,7 +87,7 @@ productsSchema.virtual("reviews", {
 });
 
 // Mongoose Middleware
-populateMongoose(productsSchema, "category", "name -_id");
+// populateMongoose(productsSchema, "category", "name -_id");  //disable products items for frontend don't need it
 
 // setImagesURL(productsSchema, "products", "imageCover", "images");
 
