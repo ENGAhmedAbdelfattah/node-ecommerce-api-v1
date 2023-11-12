@@ -76,8 +76,9 @@ const updateRules = [
 const addToAddressesValitatior = [creatRules, valitatiorMiddleware];
 const updateAddressValitatior = [updateRules, valitatiorMiddleware];
 const removeFromAddressesValitatior = [idRules, valitatiorMiddleware];
-
+const getLoggedUserSpecificAddressValitatior = [idRules, valitatiorMiddleware];
 module.exports = {
+  getLoggedUserSpecificAddressValitatior,
   addToAddressesValitatior,
   updateAddressValitatior,
   removeFromAddressesValitatior,

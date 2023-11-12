@@ -19,6 +19,24 @@ const getLoggedUserAddresses = asyncHandler(async (req, res, next) => {
 });
 
 /**
+ * @desc    get logged user specific address
+ * @route   POST /api/v1/addresses
+ * @access  Private/User
+ */
+
+const getLoggedUserSpecificAddress = asyncHandler(async (req, res, next) => {
+  const user = await UsersModel.findById(req.user._id);
+  const address = user.addresses.find(
+    (el) => el._id.toString() === req.params.addressId
+  );
+  console.log("address: ", address);
+  res.status(200).json({
+    status: "success",
+    data: address,
+  });
+});
+
+/**
  * @desc    Add address to addresses list
  * @route   POST /api/v1/addresses
  * @access  Private/User
@@ -105,6 +123,7 @@ module.exports = {
   updateAddress,
   removeAddress,
   getLoggedUserAddresses,
+  getLoggedUserSpecificAddress,
 };
 
 // {
@@ -113,11 +132,10 @@ module.exports = {
 // }
 // The upsert: true option is used to indicate that if no document matching the filter criteria is found, a new document should be inserted.
 
-  // The $set operator is used to set the value of the specific field within the matched object.
-  // .$. Positional operator $ allows you to iterate through the array and update only the corresponding subdocument
-  // .${arrayIndex}. to specific the index in array
-  // .${elem}. to specific the index in array + arrayFilters: [{ "elem._id": req.params.addressId }] to update spesific element
-
+// The $set operator is used to set the value of the specific field within the matched object.
+// .$. Positional operator $ allows you to iterate through the array and update only the corresponding subdocument
+// .${arrayIndex}. to specific the index in array
+// .${elem}. to specific the index in array + arrayFilters: [{ "elem._id": req.params.addressId }] to update spesific element
 
 // $setOnInsert: {},
 // $setOnInsert: This operator is used to specify the fields and their values that should be set only during an insert operation. These fields will be ignored if the update operation is not an insert.
