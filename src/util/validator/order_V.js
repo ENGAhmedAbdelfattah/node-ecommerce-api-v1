@@ -19,10 +19,9 @@ const creatOrderRules = [
   body("shippingAddress.phone")
     .isMobilePhone()
     .withMessage("Invalid mobile number"),
-  body("shippingAddress.city")
-    .isAlpha()
-    .withMessage("City name must contain only alphabetic characters"),
+  body("shippingAddress.city").optional(),
   body("shippingAddress.postalCode")
+    .optional()
     .isPostalCode("any")
     .withMessage("Invalid postal code"), // can validate if this color exist in product color array in products collection (if color array is required in product)
 ];
