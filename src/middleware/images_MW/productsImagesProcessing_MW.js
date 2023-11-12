@@ -43,9 +43,13 @@ const productsImageProcessingMiddleware = asyncHandler(
               const fileAfterSharp = await sharp(image.buffer)
                 .resize(600, 600) //2000 * 1333 standard for image
                 .toFormat("jpeg")
-                .jpeg({ quality: 90 }); //90%
+                .jpeg({ quality: 90 }) //90%
+                .toBuffer();
 
-              const uploadedUrl = await uploadToCloudinary(fileAfterSharp);
+              const uploadedUrl = await uploadToCloudinary(
+                fileAfterSharp,
+                "image/jpeg"
+              );
               const imageFileName = uploadedUrl;
               // const imageFileName = `product-${uuidv4()}-${Date.now()}-${
               //   index + 1
