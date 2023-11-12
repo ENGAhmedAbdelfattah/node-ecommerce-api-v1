@@ -67,7 +67,7 @@ const creatRules = [
   check("imageCover").notEmpty().withMessage("Product image cover required"),
   check("images")
     .isArray()
-    .withMessage("Product colors must be array")
+    .withMessage("Product images must be array")
     .optional(),
   check("category")
     .isMongoId()
